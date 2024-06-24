@@ -8,4 +8,9 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::get('/helloworld', [UserController::class, 'index']);
+
+//User Accounts
+Route::get('users', [UserController::class, 'index']);
+Route::post('user/register', [UserController::class, 'register']);
+Route::put('user', [UserController::class, 'update']);
+Route::delete('user/{userId}', [UserController::class, 'softDelete']);

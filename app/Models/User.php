@@ -18,8 +18,12 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
+        'id',
         'name',
         'email',
+        'contact_number',
+        'isEmployed',
+        'role',
         'password',
     ];
 
@@ -42,4 +46,9 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+    public function scopeGetUsers($query)
+    {
+        return $query->where('isEmployed', true)
+            ->get();
+    }
 }
