@@ -15,7 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('name');
             $table->string('email')->unique();
-            $table->string('contact_number'); 
+            $table->string('contact_number')->nullable(); // Adjusted to be nullable if contact number is optional
             $table->boolean('isEmployed')->default(true);
             $table->enum('role', [0, 1]);
             $table->timestamp('email_verified_at')->nullable();
@@ -31,12 +31,13 @@ return new class extends Migration
         });
 
         Schema::create('sessions', function (Blueprint $table) {
-            $table->string('id')->primary();
-            $table->foreignId('user_id')->nullable()->index();
+            $table->uuid('id')->primary();
+            $table->uuid('user_id')->nullable()->index(); // Updated to use uuid instead of foreignUuid
             $table->string('ip_address', 45)->nullable();
             $table->text('user_agent')->nullable();
             $table->longText('payload');
             $table->integer('last_activity')->index();
+            $table->timestamps();
         });
     }
 
