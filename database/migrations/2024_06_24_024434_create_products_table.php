@@ -18,7 +18,7 @@ return new class extends Migration
             $table->boolean('isActive')->default(true); 
             $table->decimal('price', total: 8, places: 2);
             $table->integer('quantity');
-            $table->string('image_url');
+            $table->string('image_url')->nullable();
             $table->foreignUuid('product_category_id')->references('id')->on('product_categories');
             $table->foreignUuid('supplier_id')->references('id')->on('suppliers');
             $table->timestamps();
