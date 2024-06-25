@@ -34,7 +34,7 @@ class UserController extends Controller
 
         //Create user account
         try {
-            $user = User::create($validatedData);
+            User::create($validatedData);
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Failed to create user: ' . $e->getMessage(),
@@ -43,7 +43,7 @@ class UserController extends Controller
 
         // Return a JSON response with the validated data
         return response()->json([
-            'message' => 'User registed successfully',
+            'message' => 'User registered successfully',
         ], 200);
     }
 
