@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
+use Illuminate\Http\Request;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
-use App\Models\Product;
 
 class ProductController extends Controller
 {
@@ -13,7 +14,10 @@ class ProductController extends Controller
      */
     public function index()
     {
-        //
+        $products = Product::getActiveProducts();
+        return response()->json([
+            'data' => $products
+        ], 200);
     }
 
     /**
@@ -24,12 +28,25 @@ class ProductController extends Controller
         //
     }
 
-    /**
+    /** 
      * Store a newly created resource in storage.
      */
     public function store(StoreProductRequest $request)
     {
-        //
+        //Extract validated data
+        $validatedData = $request->validated();
+
+        //Inserting product to DB
+        try {
+            Product::create($validatedData);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error inserting product to database'  . $e->getMessage()
+            ], 500);
+        }
+        return response()->json([
+            'data' => $validatedData
+        ], 200);
     }
 
     /**
@@ -51,16 +68,51 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateProductRequest $request, Product $product)
+    public function update(UpdateProductRequest $request)
     {
-        //
+        //Extract validated data
+
+        $validatedData = $request->validated();
+        $product = Product::find($validatedData['id']);
+        if (!$product) {
+            return response()->json([
+                'error' => 'No product found'
+            ], 404);
+        }
+        try {
+            $product->update($validatedData);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error updating product' . $e->getMessage()
+            ], 505);
+        }
+        return response()->json([
+            'message' => 'Product updated successfully'
+        ], 200);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Product $product)
+    public function destroy($id)
     {
-        //
+        $id = Product::find($id);
+        if (!$id) {
+            return response()->json([
+                'error' => 'Product not found',
+            ], 404);
+        }
+        try {
+            $id->update(['isActive' => false]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error Product suppliers' . $e->getMessage(),
+            ], 500);
+        }
+
+        return response()->json([
+            'message' => 'Product information deleted succesfully',
+
+        ], 200);
     }
 }
