@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\SupplierController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
@@ -14,3 +15,11 @@ Route::get('users', [UserController::class, 'index']);
 Route::post('user/register', [UserController::class, 'register']);
 Route::put('user', [UserController::class, 'update']);
 Route::delete('user/{userId}', [UserController::class, 'softDelete']);
+
+
+//Supplier
+Route::get('suppliers', [SupplierController::class, 'index']);
+Route::post('supplier', [SupplierController::class, 'store']);
+Route::put('supplier', [SupplierController::class, 'update']);
+Route::delete('supplier/{id}', [SupplierController::class, 'destroy']);
+
