@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreProductCategoryRequest;
 use App\Http\Requests\UpdateProductCategoryRequest;
 use App\Models\ProductCategory;
+use Illuminate\Http\Request;
 
 class ProductCategoryController extends Controller
 {
@@ -13,7 +14,10 @@ class ProductCategoryController extends Controller
      */
     public function index()
     {
-        //
+        $categories = ProductCategory::getActiveProducts();
+        return response()->json([
+            'data' => $categories,
+        ], 200);
     }
 
     /**
@@ -29,7 +33,18 @@ class ProductCategoryController extends Controller
      */
     public function store(StoreProductCategoryRequest $request)
     {
+        $validatedData = $request->validated();
+        try {
+            ProductCategory::create($validatedData);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error storing product category' . $e->getMessage()
+            ], 500);
+        }
         //
+        return response()->json([
+            'message' => 'Product Category added successfully',
+        ], 200);
     }
 
     /**
@@ -51,16 +66,50 @@ class ProductCategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateProductCategoryRequest $request, ProductCategory $productCategory)
+    public function update(UpdateProductCategoryRequest $request)
     {
-        //
+        $validatedData = $request->validated();
+        $product = ProductCategory::find($validatedData['id']);
+        if (!$product) {
+            return response()->json([
+                'error' => 'Product not found'
+            ]);
+        }
+        try {
+            $product->update($validatedData);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error updating product categories' . $e->getMessage()
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Product Category updated successfully',
+        ], 200);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(ProductCategory $productCategory)
+    public function destroy($id)
     {
-        //
+        $id = ProductCategory::find($id);
+        if (!$id) {
+            return response()->json([
+                'error' => 'Product Category not found',
+            ], 404);
+        }
+        try {
+            $id->update(['isActive' => false]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error deleting category' . $e->getMessage(),
+            ], 500);
+        }
+
+        return response()->json([
+            'message' => 'Product Category  deleted succesfully',
+
+        ], 200);
     }
 }
