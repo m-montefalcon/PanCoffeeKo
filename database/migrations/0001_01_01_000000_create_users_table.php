@@ -15,7 +15,8 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('name');
             $table->string('email')->unique();
-            $table->string('contact_number')->nullable(); // Adjusted to be nullable if contact number is optional
+            $table->string('contact_number');
+            $table->string('image_url')->nullable();
             $table->boolean('isEmployed')->default(true);
             $table->enum('role', [0, 1]);
             $table->timestamp('email_verified_at')->nullable();

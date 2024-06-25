@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->decimal('total_amount', 8, 2);
+            $table->decimal('received_amount', 8, 2);
+            $table->decimal('change_amount', 8, 2);
             $table->foreignUuid('user_id')->references('id')->on('users');
             $table->timestamps();
         });
