@@ -4,6 +4,8 @@ namespace App\Http\Requests;
 
 use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class UpdateSupplierRequest extends FormRequest
 {
@@ -45,5 +47,19 @@ class UpdateSupplierRequest extends FormRequest
             'supply_type.max' => 'The supply type may not be greater than 255 characters.',
 
         ];
+    }
+    /**
+     * Handle a failed validation attempt.
+     *
+     * @param Validator $validator
+     * @throws HttpResponseException
+     */
+    protected function failedValidation(Validator $validator)
+    {
+        $errors = $validator->errors()->first();
+        throw new HttpResponseException(response()->json([
+            'message' => $errors,
+            'errors' => $validator->errors(),
+        ], 422));
     }
 }
