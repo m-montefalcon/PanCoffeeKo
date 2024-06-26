@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\TransactionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
@@ -33,7 +34,11 @@ Route::put('category', [ProductCategoryController::class, 'update']);
 Route::delete('category/{id}', [ProductCategoryController::class, 'destroy']);
 
 //Products
-Route::get('products', [ProductController::class,'index']);
+Route::get('products', [ProductController::class, 'index']);
 Route::post('product', [ProductController::class, 'store']);
 Route::put('product', [ProductController::class, 'update']);
 Route::delete('product/{$id}', [ProductController::class, 'destroy']);
+
+
+//Transactions
+Route::post('transaction', [TransactionController::class, 'store']);
