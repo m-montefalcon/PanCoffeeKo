@@ -29,7 +29,21 @@ class TransactionController extends Controller
      */
     public function store(StoreTransactionRequest $request)
     {
-        //
+        //Extract the validated data
+        $validatedData = $request->validated();
+
+        try {
+            Transaction::create($validatedData);
+        } catch (\Exception $e) {
+            //throw $th;
+            return response()->json([
+                'error' => 'Error creating transaction on database'
+            ], 500);
+        }
+
+        return response()->json([
+            'message' => 'Created transaction successfully'
+        ], 200);
     }
 
     /**
