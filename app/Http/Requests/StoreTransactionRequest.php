@@ -24,16 +24,19 @@ class StoreTransactionRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'id' => ['required'],
             'total_amount' => ['required', 'decimal:0,2'],
             'received_amount' => ['required', 'decimal:0,2'],
             'change_amount' => ['required', 'decimal:0,2'],
-            'user_id' => ['required', 'exists:users,id']
+            'user_id' => ['required', 'exists:users,id'],
 
         ];
     }
     public function messages(): array
     {
         return [
+            'id.required' => 'The id field is required.',
+
             'total_amount.required' => 'The total amount field is required.',
             'total_amount.decimal' => 'The total amount must be a valid number with up to 2 decimal places.',
 
