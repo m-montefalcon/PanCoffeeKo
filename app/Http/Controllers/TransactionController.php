@@ -27,13 +27,13 @@ class TransactionController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreTransactionRequest $request)
+    public function store(array $data)
     {
         //Extract the validated data
-        $validatedData = $request->validated();
+        // $validatedData = $request->validated();
 
         try {
-            Transaction::create($validatedData);
+            Transaction::create($data);
         } catch (\Exception $e) {
             //throw $th;
             return response()->json([
