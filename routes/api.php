@@ -39,6 +39,7 @@ Route::get('products', [ProductController::class, 'index']);
 Route::post('product', [ProductController::class, 'store']);
 Route::put('product', [ProductController::class, 'update']);
 Route::delete('product/{$id}', [ProductController::class, 'destroy']);
+Route::get('stockin', [ProductController::class , 'stockin']);
 
 
 //Transactions

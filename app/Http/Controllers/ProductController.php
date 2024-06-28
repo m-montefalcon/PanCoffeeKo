@@ -20,17 +20,7 @@ class ProductController extends Controller
         ], 200);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /** 
-     * Store a newly created resource in storage.
-     */
+   
     public function store(StoreProductRequest $request)
     {
         //Extract validated data
@@ -113,6 +103,31 @@ class ProductController extends Controller
         return response()->json([
             'message' => 'Product information deleted succesfully',
 
+        ], 200);
+    }
+
+    public function stockin(UpdateProductRequest $request)
+    {
+        //Extract validated request
+        $validatedData = $request->validated();
+
+        $product = Product::find($validatedData['id']);
+        if (!$product) {
+            return response()->json([
+                'error' => 'Product not found'
+            ], 404);
+        }
+        try {
+            //code...
+            $product->quantity += $validatedData['quantity'];
+            $product->save();
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Unable to stock in product' . $e->getMessage()
+            ], 505);
+        }
+        return response()->json([
+            'message' => 'Stock in product successfully'
         ], 200);
     }
 }
