@@ -34,46 +34,56 @@ class TransactionDetailController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(StoreTransactionDetailRequest $request)
-    {
-        $validatedData = $request->input();
+    { 
+        // Use validated() to get validated input
+        $validatedData = $request->validated();
+        
         try {
             // Start a database transaction
             DB::beginTransaction();
     
             // Generate UUID for the transaction
             $uuid = Uuid::uuid4()->toString();
-        
-         
-            //Access transaction controller
-            $newTransaction = new TransactionController();
-
-            //Create new array for transaction data
-            $newTransactionData = [
+    
+            // Access transaction controller
+            $transactionController = new TransactionController();
+            
+            // Create new array for transaction data
+            $newTransactionData = new StoreTransactionRequest([
                 'id' => $uuid,
                 'user_id' => $validatedData['user_id'],
                 'received_amount' => $validatedData['received_amount'],
                 'total_amount' => $validatedData['total_amount'],
-                'change_amount' => $validatedData['change_amount'],
-            ];
-    
+                'change_amount' => $validatedData['change_amount']
+            ]);
+            
             // Call store method in TransactionController
-            $newTransaction->store($newTransactionData);
-          
-            
-
+            $transactionController->store($newTransactionData);
+    
             // Iterate through products and prepare data
-            foreach ($request->products as $product) {
-                $amount = (float) ($product['product_quantity'] * $product['product_price']);
-
-                // Create transaction detail record
-                TransactionDetail::create([
-                    'product_id' => $product['product_id'],
-                    'quantity' => $product['product_quantity'],
-                    'amount' => $amount,  // Insert the amount as a float
-                    'transaction_id' => $uuid
-                ]);
+            foreach ($request->products as $productData) {
+                $amount = (float) ($productData['product_quantity'] * $productData['product_price']);
+    
+                // Find the product by ID
+                $product = Product::find($productData['product_id']);
+    
+                if ($product) {
+                    // Subtract quantity from the product
+                    $product->quantity -= $productData['product_quantity'];
+                    $product->save(); // Save the updated product
+    
+                    // Create transaction detail record
+                    TransactionDetail::create([
+                        'product_id' => $productData['product_id'],
+                        'quantity' => $productData['product_quantity'],
+                        'amount' => $amount,
+                        'transaction_id' => $uuid
+                    ]);
+                } else {
+                    // Handle case where product with given ID is not found
+                    throw new \Exception("Product with ID {$productData['product_id']} not found.");
+                }
             }
-            
     
             // Commit the transaction
             DB::commit();
@@ -93,7 +103,9 @@ class TransactionDetailController extends Controller
             ], 500);
         }
     }
+    protected function storeTranscation(){
 
+    }
     /**
      * Display the specified resource.
      */

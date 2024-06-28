@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Transaction;
+use Illuminate\Http\Request;
 use App\Http\Requests\StoreTransactionRequest;
 use App\Http\Requests\UpdateTransactionRequest;
-use App\Models\Transaction;
 
 class TransactionController extends Controller
 {
@@ -27,13 +28,13 @@ class TransactionController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(array $data)
+    public function store(StoreTransactionRequest $request)
     {
         //Extract the validated data
-        // $validatedData = $request->validated();
+        $validatedData = $request->input();
 
         try {
-            Transaction::create($data);
+            Transaction::create($validatedData);
         } catch (\Exception $e) {
             //throw $th;
             return response()->json([
