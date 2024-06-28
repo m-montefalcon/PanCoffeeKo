@@ -2,7 +2,12 @@
 
 namespace App\Http\Requests;
 
+use Closure;
+use Illuminate\Support\Facades\DB;
+use App\Rules\ValidateProductQuantity;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class StoreTransactionDetailRequest extends FormRequest
 {
@@ -19,23 +24,41 @@ class StoreTransactionDetailRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    public function rules(): array
+  public function rules(): array
     {
         return [
             'user_id' => ['required', 'exists:users,id'],
-            'received_amount' => ['required', 'decimal:0,2'],
-            'total_amount' => ['required', 'decimal:0,2'],
-            'change_amount' => ['required', 'decimal:0,2'],
+            'received_amount' => ['required', 'numeric', 'min:0'],
+            'total_amount' => ['required', 'numeric', 'min:0'],
+            'change_amount' => ['required', 'numeric', 'min:0'],
 
             'products' => ['required', 'array'],
-            'product.*.id' => ['required', 'exists:products,id'], 
-            'product.*.quantity' => ['required', 'integer', 'min:1'], 
-            'product.*.price' => ['required', 'decimal:0,2'], 
+            'products.*.product_id' => ['required', 'exists:products,id'],
+            'products.*.product_quantity' => [
+                'required',
+                'integer',
+                'min:1',
+                function ($attribute, $value, $fail) {
+                    // Extract the index from the attribute name
+                    $index = explode('.', $attribute)[1];
+                    $productId = $this->input("products.$index.product_id");
 
+                    // Query the database for the quantity of the product
+                    $qty = DB::table('products')->where('id', $productId)->value('quantity');
 
+                    if ($value > $qty) {
+                        $fail("$attribute cannot be more than available quantity ($qty).");
+                    }
+                },
+            ],
+            'products.*.product_price' => ['required', 'numeric', 'min:0'],
         ];
-        
     }
+
+
+
+    
+    
     public function messages()
     {
         return [
@@ -67,6 +90,20 @@ class StoreTransactionDetailRequest extends FormRequest
 
 
         ];
+    }
+    /**
+     * Handle a failed validation attempt.
+     *
+     * @param Validator $validator
+     * @throws HttpResponseException
+     */
+    protected function failedValidation(Validator $validator)
+    {
+        $errors = $validator->errors()->first();
+        throw new HttpResponseException(response()->json([
+            'message' => $errors,
+            'errors' => $validator->errors(),
+        ], 422));
     }
 
 }
