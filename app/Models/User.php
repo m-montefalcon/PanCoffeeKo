@@ -48,7 +48,9 @@ class User extends Authenticatable
     ];
     public function scopeGetUsers($query)
     {
-        return $query->where('isEmployed', true)
+        return $query->select('id', 'name', 'role')
+            ->where('isEmployed', true)
+            ->orderBy('name', 'asc')
             ->get();
     }
 }
