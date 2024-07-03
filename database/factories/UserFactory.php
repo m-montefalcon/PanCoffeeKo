@@ -2,9 +2,11 @@
 
 namespace Database\Factories;
 
+use Faker\Provider\bg_BG\PhoneNumber;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Faker\Factory as Faker;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
@@ -21,14 +23,21 @@ class UserFactory extends Factory
      *
      * @return array<string, mixed>
      */
-    public function definition(): array
+    public function definition()
     {
         return [
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
+            'id' => $this->faker->uuid,
+            'name' => $this->faker->name,
+            'email' => $this->faker->unique()->safeEmail,
+            'contact_number' => $this->faker->phoneNumber,
+            'image_url' => null,
+            'isEmployed' => true,
+            'role' => $this->faker->randomElement(['0', '1']),
             'email_verified_at' => now(),
-            'password' => static::$password ??= Hash::make('password'),
+            'password' => Hash::make('password'),
             'remember_token' => Str::random(10),
+            'created_at' => now(),
+            'updated_at' => now(),
         ];
     }
 
