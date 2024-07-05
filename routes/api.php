@@ -19,6 +19,8 @@ Route::get('users', [UserController::class, 'index']);
 Route::post('user/register', [UserController::class, 'register']);
 Route::put('user', [UserController::class, 'update']);
 Route::delete('user/{userId}', [UserController::class, 'softDelete']);
+Route::get('users/{id}', [UserController::class, 'show']);
+
 
 
 //Supplier

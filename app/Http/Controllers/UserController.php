@@ -14,15 +14,34 @@ use PhpParser\Node\Stmt\TryCatch;
 
 class UserController extends Controller
 {
-    //
-    public function index()
+    public function index(Request $request)
     {
-        $users =  User::getUsers();
+        $perPage = $request->input('per_page', 15); // Default to 15 items per page
+        $users = User::getUsers($perPage);
+    
         return response()->json([
-            'data' => $users,
+            'users' => $users,
+            'meta' => [
+                'last_page' => $users->lastPage(), // Total number of pages
+            ],
         ], 200);
+    }
+    
+    public function show ($id)
+    {
+        $user = User::userFullDetails($id);
+        if (!$user) {
+           return response()->json([
+                'error' => "Unable to find user"
+           ], 404);
+        }
+        return response()->json([
+            'data' => $user
+       ], 200);
 
     }
+    
+
 
     public function register(StoreUserRequest $request)
     {

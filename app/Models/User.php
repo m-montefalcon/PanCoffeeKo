@@ -46,11 +46,19 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
-    public function scopeGetUsers($query)
+    //Query all users where currently employed, order by name ascending, paginate by 15
+    public function scopeGetUsers($query, $perPage = 15)
     {
         return $query->select('id', 'name', 'role')
             ->where('isEmployed', true)
             ->orderBy('name', 'asc')
-            ->get();
+            ->paginate($perPage);
     }
+    
+    public function scopeUserFullDetails($query, $id){
+        return $query->select('name', 'email', 'contact_number', 'image_url', 'isEmployed', 'role', 'created_at', 'updated_at')
+            ->where('id', $id)
+            ->first();
+    }
+
 }
