@@ -17,6 +17,15 @@ class ProductCategory extends Model
     {
         return $query->select('id', 'name')
             ->where('isActive', true)
+            ->orderBy('name', 'ASC')
+            ->paginate(10);
+    }
+    
+    public function scopeGetProducts($query)
+    {
+        return $query->select('id', 'name')
+            ->where('isActive', true)
+            ->orderBy('name', 'ASC')
             ->get();
     }
 }

@@ -16,7 +16,10 @@ class ProductCategoryController extends Controller
     {
         $categories = ProductCategory::getActiveProducts();
         return response()->json([
-            'data' => $categories,
+            'categories' => $categories,
+            'meta' => [
+                'last_page' => $categories->lastPage(), // Total number of pages
+            ],
         ], 200);
     }
 

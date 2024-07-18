@@ -6,6 +6,8 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
+use App\Models\ProductCategory;
+use App\Models\Supplier;
 
 class ProductController extends Controller
 {
@@ -39,6 +41,15 @@ class ProductController extends Controller
         ], 200);
     }
 
+    public function productInformation(){
+        $suppliers = Supplier::getSuppliers();
+        $categories = ProductCategory::getProducts();
+        return response()->json([
+            'suppliers' => $suppliers,
+            'categories' => $categories
+        ], 200);
+
+    }
     /**
      * Display the specified resource.
      */
