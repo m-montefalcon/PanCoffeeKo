@@ -21,6 +21,17 @@ class Supplier extends Model
     {
         return $query->select('id', 'name', 'contact_number', 'supply_type')
             ->where('isActive', true)
+            ->orderBy('name', 'ASC')
+            ->paginate(10);
+    }
+
+
+    public function scopeGetSuppliers($query){
+        return $query->select('id', 'name')
+            ->where('isActive', true)
+            ->orderBy('name', 'ASC')
             ->get();
+
     }
 }
+;

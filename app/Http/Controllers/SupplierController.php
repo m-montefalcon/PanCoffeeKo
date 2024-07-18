@@ -16,7 +16,10 @@ class SupplierController extends Controller
     {
         $suppliers = Supplier::getActiveSuppliers();
         return response()->json([
-            'data' => $suppliers
+            'suppliers' => $suppliers,
+            'meta' => [
+                'last_page' => $suppliers->lastPage(), // Total number of pages
+            ],
         ], 200);
     }
 
