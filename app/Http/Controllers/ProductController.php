@@ -17,29 +17,47 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::getActiveProducts();
-        return response()->json([
-            'data' => $products
+         return response()->json([
+            'products' => $products,
+            'meta' => [
+                'last_page' => $products->lastPage(), // Total number of pages
+            ],
         ], 200);
     }
 
-   
-    public function store(StoreProductRequest $request)
-    {
-        //Extract validated data
-        $validatedData = $request->validated();
 
-        //Inserting product to DB
-        try {
-            Product::create($validatedData);
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'Error inserting product to database'  . $e->getMessage()
-            ], 500);
-        }
+public function store(StoreProductRequest $request)
+{
+    // Validate the incoming request (including file upload)
+    $request->validate([
+        'photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Adjust validation rules as needed
+    ]);
+
+    // Extract validated form data
+    $validatedData = $request->validated();
+
+    // Store the uploaded file
+    $validatedData['image_url'] = $request->file('photo')->store('uploads', 'public');
+
+    // Convert price to float (if needed)
+    $validatedData['price'] = floatval($validatedData['price']);
+
+    try {
+        // Create a new Product instance and store in the database
+        $product = Product::create($validatedData);
+
+        // Return a JSON response with the created product data
         return response()->json([
-            'data' => $validatedData
+            'data' => $product,
+            'message' => 'Product created successfully'
         ], 200);
+    } catch (\Exception $e) {
+        // Handle any errors that occur during product creation
+        return response()->json([
+            'error' => 'Error inserting product to database: ' . $e->getMessage()
+        ], 500);
     }
+}
 
     public function productInformation(){
         $suppliers = Supplier::getSuppliers();
@@ -53,9 +71,22 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Product $product)
+    public function show($id)
     {
-        //
+        try {
+            //code...
+            $product = Product::showProduct($id);
+        } catch (\Exception $e) {
+           return response()->json([
+                'error' => 'Product not found',
+            ], 404);
+        }
+
+        return response()->json([
+                'data' => $product,
+            ], 200);
+
+        
     }
 
     /**

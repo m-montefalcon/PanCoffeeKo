@@ -16,7 +16,8 @@ class Product extends Model
         'quantity',
         'product_category_id',
         'supplier_id',
-        'isActive'
+        'isActive',
+        'image_url'
     ];
 
     public function scopeGetActiveProducts($query)
@@ -26,6 +27,26 @@ class Product extends Model
             'products.name',
             'products.price',
             'products.quantity',
-        )->get();
+        )->orderBy('name', 'ASC')
+        ->paginate(10);
+    }
+
+
+    public function scopeShowProduct($query,$id)
+    {
+        return $query->select(
+            'products.id',
+            'products.name',
+            'products.description',
+            'products.isActive',
+            'products.price',
+            'products.quantity',
+            'products.image_url',
+            'product_categories.name AS category_name',
+            'suppliers.name AS supplier_name'
+        )->join('product_categories', 'products.product_category_id', '=', 'product_categories.id')
+        ->join('suppliers', 'products.supplier_id', '=', 'suppliers.id')
+        ->where('products.id', $id)
+        ->first();
     }
 }
