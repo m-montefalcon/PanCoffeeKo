@@ -75,6 +75,8 @@ public function store(StoreProductRequest $request)
     {
         try {
             //code...
+            $suppliers = Supplier::getSuppliers();
+            $categories = ProductCategory::getProducts();
             $product = Product::showProduct($id);
         } catch (\Exception $e) {
            return response()->json([
@@ -83,7 +85,9 @@ public function store(StoreProductRequest $request)
         }
 
         return response()->json([
-                'data' => $product,
+                'product' => $product,
+                'suppliers' => $suppliers,
+                'categories' => $categories
             ], 200);
 
         

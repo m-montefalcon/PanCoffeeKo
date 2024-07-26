@@ -42,8 +42,8 @@ class Product extends Model
             'products.price',
             'products.quantity',
             'products.image_url',
-            'product_categories.name AS category_name',
-            'suppliers.name AS supplier_name'
+            'product_categories.id AS product_category_id',
+            'suppliers.id AS supplier_id'
         )->join('product_categories', 'products.product_category_id', '=', 'product_categories.id')
         ->join('suppliers', 'products.supplier_id', '=', 'suppliers.id')
         ->where('products.id', $id)
