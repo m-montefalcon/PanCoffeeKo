@@ -107,9 +107,22 @@ public function store(StoreProductRequest $request)
     public function update(UpdateProductRequest $request)
     {
         //Extract validated data
+        $request->validate([
+                'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Adjust validation rules as needed
+            ]);
 
+    
         $validatedData = $request->validated();
         $product = Product::find($validatedData['id']);
+
+        if ($request->hasFile('photo')) 
+        {
+            $validatedData['image_url'] = $request->file('photo')->store('uploads', 'public');
+        } else 
+        {
+            // Remove image_url from validatedData if no new photo is provided
+            unset($validatedData['image_url']);
+        }
         if (!$product) {
             return response()->json([
                 'error' => 'No product found'

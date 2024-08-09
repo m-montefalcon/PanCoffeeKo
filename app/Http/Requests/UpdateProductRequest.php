@@ -32,15 +32,14 @@ class UpdateProductRequest extends FormRequest
                 Rule::unique('products')->ignore($this->id, 'id')
             ],
             'description' => ['nullable', 'max:255'],
-            'price' => [
-                'nullable',
-                'decimal:0,2'
-            ],
+            'price' => ['nullable', 'numeric', 'regex:/^\d+(\.\d{1,2})?$/'],
             'quantity' => ['nullable', 'integer'],
             'product_category_id' => ['nullable', 'exists:product_categories,id'],
-            'supplier_id' => ['nullable', 'exists:suppliers,id']
+            'supplier_id' => ['nullable', 'exists:suppliers,id'],
+            'photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
         ];
     }
+
     public function messages()
     {
         return [
